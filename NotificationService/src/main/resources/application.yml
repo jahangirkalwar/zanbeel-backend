@@ -1,0 +1,49 @@
+# Server settings
+server:
+  port: 8084
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: myGroup
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "*"
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+
+# Email Configuration
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: officesajjadahmed@gmail.com
+    password: snbr rstr sbzr wdew
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
+
+#spring:
+#  kafka:
+#    consumer:
+#      properties:
+#        spring.json.trusted.packages: '*'
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8772/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true

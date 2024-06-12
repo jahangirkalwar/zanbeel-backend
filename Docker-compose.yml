@@ -1,0 +1,86 @@
+version: '3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - my_network
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9093  # Change to a different port (e.g., 9093)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9093  # Update the port here too
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    networks:
+      - my_network
+    depends_on:
+      - zookeeper
+  user-service:
+    image: user-service.jar
+    ports:
+        - "9096:8081"
+    networks:
+      - my_network
+    depends_on:
+      - service-registry
+      - kafka
+    environment:
+      - SPRING_APPLICATION_NAME=user-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+
+  beneficiary-service:
+    image: beneficiary-service.jar
+    ports:
+      - "9090:8083"
+    networks:
+      - my_network
+    depends_on:
+      - service-registry
+    environment:
+      - SPRING_APPLICATION_NAME=beneficiary-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+
+  notification-service:
+    image: notification-service.jar
+    ports:
+      - "8084:8084"
+    networks:
+      - my_network
+    depends_on:
+      - service-registry
+      - kafka
+    environment:
+      - SPRING_APPLICATION_NAME=notification-service
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+
+  api-gateway:
+    image: api-gateway.jar
+    ports:
+      - "9094:8080"
+    networks:
+      - my_network
+    depends_on:
+      - service-registry
+    environment:
+      - SPRING_APPLICATION_NAME=api-gateway
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+
+  service-registry:
+    image: service-registry.jar
+    ports:
+      - "9091:8761"
+    networks:
+      - my_network
+    environment:
+      - SPRING_APPLICATION_NAME=service-registry
+
+networks:
+  my_network:
+    driver: bridge

@@ -1,0 +1,39 @@
+# Server settings
+server:
+  port: 8083
+
+
+# Database configuration
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: 192.168.0.164:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  application:
+    name: BENEFICIARY-SERVICE
+  datasource:
+    url: jdbc:mysql://192.168.0.3:3306/beneficiary
+    username: user1
+    password: User1#123
+  jpa:
+    hibernate:
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
+      ddl-auto: update
+    show-sql: true
+#  config:
+#    import: configserver:http://localhost:8085
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+#    eureka:
+#      client:
+#        service-url:
+#          defaultZone: http://localhost:8761/eureka

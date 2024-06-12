@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-gateway" />
+        <module name="CustomUtility" />
+        <module name="user-service" />
+        <module name="DummyService" />
+        <module name="notification-service" />
+        <module name="service-registery" />
+      </profile>
+      <profile name="Annotation profile for BeneficiaryService" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.4.2.Final/mapstruct-processor-1.4.2.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.4.2.Final/mapstruct-1.4.2.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.22/lombok-1.18.22.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.1.0/lombok-mapstruct-binding-0.1.0.jar" />
+        </processorPath>
+        <module name="BeneficiaryService" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="api-gateway" target="17" />
+      <module name="BeneficiaryService" target="17" />
+      <module name="CustomUtility" target="17" />
+      <module name="DummyService" target="17" />
+      <module name="notification-service" target="17" />
+      <module name="service-registery" target="17" />
+      <module name="user-service" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="BeneficiaryService" options="-parameters" />
+      <module name="CustomUtility" options="-parameters" />
+      <module name="DummyService" options="-parameters" />
+      <module name="api-gateway" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
+      <module name="service-registery" options="-parameters" />
+      <module name="user-service" options="-parameters" />
+    </option>
+  </component>
+</project>

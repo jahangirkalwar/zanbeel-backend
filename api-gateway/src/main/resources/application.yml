@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    config:
+      enabled: false  # Assuming you don't have a config server setup for this service
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+              allowedOrigins: "*"
+              allowedMethods: "*"
+              allowedHeaders: "*"
+      routes:
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/v1/customer/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://service-registry:8761/eureka/

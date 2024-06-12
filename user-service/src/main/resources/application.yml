@@ -1,0 +1,33 @@
+# Server settings
+server:
+  port: 8086
+
+
+
+# Database configuration
+spring:
+  kafka:
+    topic:
+      name: otp-topic
+    producer:
+      bootstrap-servers: kafka:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  application:
+    name: USER-SERVICE
+  datasource:
+    url: jdbc:postgresql://192.168.0.196:5432/mydatabase
+    username: postgres
+    password: mysecretpassword
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8772/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true

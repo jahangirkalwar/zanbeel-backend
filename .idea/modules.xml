@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/BeneficiaryService/BeneficiaryService.iml" filepath="$PROJECT_DIR$/BeneficiaryService/BeneficiaryService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CustomUtility/CustomUtility.iml" filepath="$PROJECT_DIR$/CustomUtility/CustomUtility.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DummyService/DummyService.iml" filepath="$PROJECT_DIR$/DummyService/DummyService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/api-gateway/api-gateway.iml" filepath="$PROJECT_DIR$/api-gateway/api-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NotificationService/notification-service.iml" filepath="$PROJECT_DIR$/NotificationService/notification-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/service-registery/service-registery.iml" filepath="$PROJECT_DIR$/service-registery/service-registery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user-service/user-service.iml" filepath="$PROJECT_DIR$/user-service/user-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/zanbeel-backend-dev.iml" filepath="$PROJECT_DIR$/.idea/zanbeel-backend-dev.iml" />
+    </modules>
+  </component>
+</project>
