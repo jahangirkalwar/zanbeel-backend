@@ -198,4 +198,54 @@ public class OTPLogImpl implements OTPLogSerivce {
         return false;
     }
 
+
+    public Boolean verifyOTP2(OTPDto verifyOTPDto)
+    {
+        LOGGER.info("Executing confirmOTP Request...");
+
+        List<OTPLog> otpLogList = findByMobileNumberAndIsExpired(verifyOTPDto.getMobileNumber(), false);
+
+        if(otpLogList != null && !otpLogList.isEmpty())
+        {
+            for(OTPLog otp : otpLogList)
+            {
+                if(otp.getExpiryDateTime() > Long.parseLong(Util.dateFormat.format(new Date())))
+                {
+                    if(otp.getOTP().equals(verifyOTPDto.getOtp()) && !otp.getIsVerified())
+                    {
+                        otp.setIsExpired(true);
+                        otp.setVerifyDateTime(Long.parseLong(Util.dateFormat.format(new Date())));
+
+                        if(otp.getReason().equals(SMSCategory.VERIFY_MOBILE_DEVICE.getValue()))
+                        {
+                            customerServiceImpl.setCustomerStatus(verifyOTPDto.getEmail(), verifyOTPDto.getMobileNumber()); // updating status of customer
+                        }
+
+                        if(save(otp).getId() != null)
+                        {
+                            LOGGER.info("OTP verified successfully for customer [{}], replying...", verifyOTPDto.getMobileNumber());
+                            response = new CustomResponseEntity<>("verified otp successfully");
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        LOGGER.info("OTP does not match for customer [{}], replying...", verifyOTPDto.getMobileNumber());
+                        response = new CustomResponseEntity<>(1013, "incorrect otp");
+                        return false;
+                    }
+                }
+                else
+                {
+                    LOGGER.info("OTP has been expired for customer [{}], replying...", verifyOTPDto.getMobileNumber());
+                    response = new CustomResponseEntity<>(1013, "OTP has been expired ");
+                    return false;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
 }

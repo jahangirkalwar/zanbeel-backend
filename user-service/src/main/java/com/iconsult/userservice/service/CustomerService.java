@@ -14,6 +14,8 @@ public interface CustomerService
 
     CustomResponseEntity register(CustomerDto customerDto, OTPLogImpl otpLogImpl);
 
+    CustomResponseEntity signup(CustomerDto customerDto , OTPLogImpl otpLogImpl);
+
     CustomResponseEntity login(LoginDto loginDto);
 
     void deleteUser(Long id);

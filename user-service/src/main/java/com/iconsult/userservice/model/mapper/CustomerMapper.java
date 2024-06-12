@@ -1,6 +1,7 @@
 package com.iconsult.userservice.model.mapper;
 
 import com.iconsult.userservice.model.dto.request.CustomerDto;
+import com.iconsult.userservice.model.dto.request.CustomerSignUpDto;
 import com.iconsult.userservice.model.entity.Customer;
 import org.mapstruct.Mapper;
 
@@ -8,4 +9,5 @@ import org.mapstruct.Mapper;
 public interface CustomerMapper
 {
     Customer dtoToJpe(CustomerDto customerDto);
+    Customer dtoToJpe(CustomerSignUpDto signUpDto);
 }

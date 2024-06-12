@@ -40,6 +40,16 @@ public class CustomerDto
     @NotEmpty(message = "Security Picture is mandatory")
     private String securityPicture;
 
+    private String otp;
+
+    public String getOTP() {
+        return otp;
+    }
+
+    public void setOTP(String OTP) {
+        this.otp = OTP;
+    }
+
     public String getMobileNumber() {
         return mobileNumber;
     }

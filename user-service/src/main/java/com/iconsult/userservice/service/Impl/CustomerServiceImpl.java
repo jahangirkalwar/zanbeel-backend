@@ -10,6 +10,7 @@ import com.iconsult.userservice.model.dto.response.AccountDto;
 import com.iconsult.userservice.model.dto.response.KafkaMessageDto;
 import com.iconsult.userservice.model.entity.AppConfiguration;
 import com.iconsult.userservice.model.entity.Customer;
+import com.iconsult.userservice.model.mapper.CustomerMapper;
 import com.iconsult.userservice.model.mapper.CustomerMapperImpl;
 import com.iconsult.userservice.repository.CustomerRepository;
 import com.iconsult.userservice.service.CustomerService;
@@ -158,6 +159,34 @@ public class CustomerServiceImpl implements CustomerService
         response = new CustomResponseEntity<>("OTP sent Successfully");
 
         return response;
+    }
+
+//    @Override
+//    public CustomResponseEntity signup(CustomerDto customerDto, OTPLogImpl otpLogImpl) {
+//        Customer customer = customerMapperImpl.dtoToJpe(customerDto);
+//
+//        if(!otpLogImpl.createAndSendOTP(new OTPDto(customerDto.getEmail()))){
+//            LOGGER.error("Failed to create & Send OTP to email [" + customerDto.getEmail() + "], rejecting...");
+//            throw new ServiceException("SMS Gateway Down");
+//        }
+//        customerRepository.save(customer);
+//        return new CustomResponseEntity<>("customer saved succesfully");
+//    }
+
+    @Override
+    public CustomResponseEntity signup(CustomerDto customerDto, OTPLogImpl otpLogImpl) {
+        // Create a customer entity from the DTO
+        Customer customer = customerMapperImpl.dtoToJpe(customerDto);
+
+        // Verify OTP
+        if (!otpLogImpl.verifyOTP2(new OTPDto(customerDto.getMobileNumber(), customerDto.getEmail(), SMSCategory.VERIFY_MOBILE_DEVICE.getValue(), customerDto.getOTP()))) {
+            LOGGER.error("Failed to verify OTP, rejecting...");
+            throw new ServiceException("Invalid OTP");
+        }
+        // Save the customer entity after OTP verification
+        customerRepository.save(customer);
+
+        return new CustomResponseEntity<>("Customer Registered successfully");
     }
 
     @Override

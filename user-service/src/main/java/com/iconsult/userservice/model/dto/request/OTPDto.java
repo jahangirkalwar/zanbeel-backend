@@ -29,4 +29,11 @@ public class OTPDto {
         this.email = email;
         this.reason = reason;
     }
+
+    public OTPDto(String mobileNumber, String email, String reason, String otp) {
+        this.mobileNumber = mobileNumber;
+        this.email = email;
+        this.reason = reason;
+        this.otp = otp;
+    }
 }

@@ -40,6 +40,13 @@ public class CustomerController
         return this.customerServiceImpl.register(customerDto, otpLogImpl);
     }
 
+    @PostMapping("/register")
+    public CustomResponseEntity signUp(@Valid @RequestBody CustomerDto customerDto)
+    {
+        return this.customerServiceImpl.signup(customerDto, otpLogImpl);
+    }
+
+
     @PostMapping("/createOTP")
     public CustomResponseEntity createOTP(@Valid @RequestBody OTPDto OTPDto)
     {
