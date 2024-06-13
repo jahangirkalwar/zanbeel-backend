@@ -46,7 +46,6 @@ public class CustomerController
         return this.customerServiceImpl.signup(customerDto, otpLogImpl);
     }
 
-
     @PostMapping("/createOTP")
     public CustomResponseEntity createOTP(@Valid @RequestBody OTPDto OTPDto)
     {
@@ -69,6 +68,7 @@ public class CustomerController
     @PostMapping("/login")
     public CustomResponseEntity login(@Valid @RequestBody LoginDto loginDto)
     {
+
         return this.customerServiceImpl.login(loginDto);
     }
 

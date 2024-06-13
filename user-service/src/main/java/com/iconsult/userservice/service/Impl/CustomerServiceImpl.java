@@ -14,6 +14,7 @@ import com.iconsult.userservice.model.mapper.CustomerMapper;
 import com.iconsult.userservice.model.mapper.CustomerMapperImpl;
 import com.iconsult.userservice.repository.CustomerRepository;
 import com.iconsult.userservice.service.CustomerService;
+import com.iconsult.userservice.service.JwtService;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
@@ -26,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.*;
@@ -55,6 +59,12 @@ public class CustomerServiceImpl implements CustomerService
 
     @Autowired
     private AppConfigurationImpl appConfigurationImpl;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
 //    @Override
 //    public CustomResponseEntity register(CustomerDto customerDto)
@@ -205,8 +215,19 @@ public class CustomerServiceImpl implements CustomerService
             if (customer.getPassword().equals(loginDto.getPassword()) &&
                     (loginDto.getSecurityImage() == null || customer.getSecurityPicture().equals(loginDto.getSecurityImage())))
             {
+                // JWT Implementation STarts
+                Authentication authentication =
+                        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmailorUsername(), loginDto.getPassword()));
+                String email = authentication.getName();
+                String token = jwtService.generateToken(email);
+                LOGGER.info("Token = " + token);
+                LOGGER.info("Expiration = " + jwtService.getTokenExpireTime(token).getTime());
+                // JWT Implementation Ends
+
                 Map<String,Object> data = new HashMap<>();
                 data.put("customerId", customer.getId());
+                data.put("token", token);
+                data.put("expirationTime", jwtService.getTokenExpireTime(token).getTime());
                 response = new CustomResponseEntity<>(data, "customer logged in successfully");
                 return response;
             }
