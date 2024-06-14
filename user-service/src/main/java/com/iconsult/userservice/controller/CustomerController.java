@@ -2,6 +2,7 @@ package com.iconsult.userservice.controller;
 
 import com.iconsult.userservice.model.dto.request.*;
 import com.iconsult.userservice.model.entity.Customer;
+import com.iconsult.userservice.service.AuthService;
 import com.iconsult.userservice.service.Impl.CustomerServiceImpl;
 import com.iconsult.userservice.service.Impl.OTPLogImpl;
 import com.zanbeel.customUtility.model.CustomResponseEntity;
@@ -25,6 +26,9 @@ public class CustomerController
 
     @Autowired
     private OTPLogImpl otpLogImpl;
+
+    @Autowired
+    private AuthService authService;
 
     @GetMapping("/ping")
     @Hidden
@@ -70,6 +74,12 @@ public class CustomerController
     {
 
         return this.customerServiceImpl.login(loginDto);
+    }
+
+    @GetMapping("/validateToken")
+    public String validateToken(@RequestParam("token") String token) {
+        authService.validateToken(token);
+        return "Token is valid";
     }
 
     @PostMapping("/forgetUserName")
