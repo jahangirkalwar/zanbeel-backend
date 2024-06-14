@@ -119,24 +119,9 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                 try {
                     // Validate token with WebClient
-                    String url = "http://USER-SERVICE/v1/customer/validateToken?token=" + authHeader;
-                    logger.info("Validating token with URL: " + url);
-
-                    String finalAuthHeader = authHeader;
-                    return webClientBuilder.build()
-                            .get()
-                            .uri(url)
-                            .retrieve()
-                            .bodyToMono(String.class)
-                            .flatMap(response -> {
-                                jwtUtil.validateToken(finalAuthHeader);
-                                logger.info("Token validated successfully");
-                                return chain.filter(exchange);
-                            })
-                            .onErrorResume(e -> {
-                                logger.severe("Invalid access: " + e.getMessage());
-                                return Mono.error(new ServiceException("Unauthorized access to application", e));
-                            });
+                    //String url = "http://USER-SERVICE/v1/customer/validateToken?token=" + authHeader;
+                    //logger.info("Validating token with URL: " + url);
+                    jwtUtil.validateToken(authHeader);
                 } catch (Exception e) {
                     logger.severe("Invalid access: " + e.getMessage());
                     throw new ServiceException("Unauthorized access to application", e);
