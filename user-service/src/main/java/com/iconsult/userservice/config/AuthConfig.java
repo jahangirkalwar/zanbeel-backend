@@ -30,7 +30,7 @@ public class AuthConfig {
         return http.csrf(AbstractHttpConfigurer::disable)  // Disable CSRF protection
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/v1/customer/register", "/v1/customer/login", "/v1/customer/validateToken").permitAll()
+                                .requestMatchers("/v1/customer/**").permitAll()
                                 ).build();
     }
 
