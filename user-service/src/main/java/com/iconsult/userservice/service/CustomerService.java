@@ -32,7 +32,7 @@ public interface CustomerService
 
     Customer save(Customer customer);
 
-    CustomResponseEntity<Customer> findById(Long id);
+    CustomResponseEntity<Customer> findById(Long id,String token);
 
     CustomResponseEntity forgetUserName(ForgetUsernameDto forgetUsernameDto);
 

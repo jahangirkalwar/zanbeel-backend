@@ -110,8 +110,8 @@ public class CustomerController
     }
 
     @GetMapping("/getCustomer/{id}")
-    public CustomResponseEntity<Customer> findById(@PathVariable Long id)
+    public CustomResponseEntity<Customer> findById(@PathVariable Long id, @RequestHeader("Authorization") String bearerToken)
     {
-        return this.customerServiceImpl.findById(id);
+        return this.customerServiceImpl.findById(id, bearerToken);
     }
 }

@@ -20,6 +20,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.zanbeel.customUtility.model.CustomResponseEntity;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import javax.net.ssl.*;
 import javax.ws.rs.core.MediaType;
+import java.security.Key;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +46,8 @@ import java.util.concurrent.CompletableFuture;
 public class CustomerServiceImpl implements CustomerService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomerServiceImpl.class);
+    public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
+
 
     //private final String URL = "http://192.168.0.196:8085/account/getAccounts?cnicNumber=%s";
 //    private final String URL = "http://localhost:8081/customer/getDetails?cnicNumber=%s&";
@@ -276,7 +282,8 @@ public class CustomerServiceImpl implements CustomerService
     }
 
     @Override
-    public CustomResponseEntity<Customer> findById(Long id) {
+    public CustomResponseEntity<Customer> findById(Long id, String token) {
+        validateToken(token);
         Optional<Customer> customer = this.customerRepository.findById(id);
         if (!customer.isPresent()) {
             return new CustomResponseEntity<>(1000, "Customer Not Found");
@@ -573,5 +580,16 @@ public class CustomerServiceImpl implements CustomerService
 
         LOGGER.error("No Customer found to update the status");
         return false;
+    }
+    public void validateToken(final String token) {
+        String authHeader = token;
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            authHeader = authHeader.substring(7);
+        }
+        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(authHeader);
+    }
+    private Key getSignKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
