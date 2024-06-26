@@ -9,9 +9,9 @@ import com.iconsult.userservice.model.entity.AppConfiguration;
 import com.iconsult.userservice.model.entity.OTPLog;
 import com.iconsult.userservice.repository.OTPLogRepository;
 import com.iconsult.userservice.service.OTPLogSerivce;
-import com.twilio.Twilio;
-import com.twilio.type.PhoneNumber;
-import com.twilio.rest.api.v2010.account.Message;
+//import com.twilio.Twilio;
+//import com.twilio.type.PhoneNumber;
+//import com.twilio.rest.api.v2010.account.Message;
 import com.zanbeel.customUtility.model.CustomResponseEntity;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -214,23 +214,23 @@ public class OTPLogImpl implements OTPLogSerivce {
     }
 
 
-    private boolean sendOtpViaSms(String mobileNumber, String otp) {
-        try {
-            Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-
-            Message message = Message.creator(
-                            new PhoneNumber(mobileNumber), // To number
-                            new PhoneNumber(TWILIO_PHONE_NUMBER), // From Twilio number
-                            "Your OTP is: " + otp) // Message body
-                    .create();
-
-            LOGGER.info("OTP Sent Successfully to [{}]", mobileNumber);
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("Failed to send OTP via SMS to [{}]: {}", mobileNumber, e.getMessage());
-            return false;
-        }
-    }
+//    private boolean sendOtpViaSms(String mobileNumber, String otp) {
+//        try {
+//            Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+//
+//            Message message = Message.creator(
+//                            new PhoneNumber(mobileNumber), // To number
+//                            new PhoneNumber(TWILIO_PHONE_NUMBER), // From Twilio number
+//                            "Your OTP is: " + otp) // Message body
+//                    .create();
+//
+//            LOGGER.info("OTP Sent Successfully to [{}]", mobileNumber);
+//            return true;
+//        } catch (Exception e) {
+//            LOGGER.error("Failed to send OTP via SMS to [{}]: {}", mobileNumber, e.getMessage());
+//            return false;
+//        }
+//    }
 
     public Boolean verifyOTP2(OTPDto verifyOTPDto)
     {
