@@ -5,27 +5,25 @@ import com.iconsult.userservice.enums.SMSCategory;
 import com.iconsult.userservice.exception.ServiceException;
 import com.iconsult.userservice.model.dto.request.OTPDto;
 import com.iconsult.userservice.model.dto.response.KafkaMessageDto;
-import com.iconsult.userservice.model.dto.response.ResponseDTO;
 import com.iconsult.userservice.model.entity.AppConfiguration;
-import com.iconsult.userservice.model.entity.Customer;
 import com.iconsult.userservice.model.entity.OTPLog;
 import com.iconsult.userservice.repository.OTPLogRepository;
 import com.iconsult.userservice.service.OTPLogSerivce;
+import com.twilio.Twilio;
+import com.twilio.type.PhoneNumber;
+import com.twilio.rest.api.v2010.account.Message;
 import com.zanbeel.customUtility.model.CustomResponseEntity;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -48,6 +46,16 @@ public class OTPLogImpl implements OTPLogSerivce {
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate;
+
+
+    // Twilio credentials
+    public static final String TWILIO_ACCOUNT_SID = "AC6395c0d48c327bdff8850acf5821b337";
+    public static final String TWILIO_AUTH_TOKEN = "3c1f30244befe2bd1bb32b0cc82aee22";
+    public static final String TWILIO_PHONE_NUMBER = "+12295446642";
+
+    public OTPLogImpl() {
+    }
+
     @Override
     public OTPLog save(OTPLog otpLog) {
         return this.otpLogRepository.save(otpLog);
@@ -93,6 +101,8 @@ public class OTPLogImpl implements OTPLogSerivce {
         LOGGER.info("Executing confirmOTP Request...");
 
         List<OTPLog> otpLogList = findByMobileNumberAndIsExpired(verifyOTPDto.getMobileNumber(), false);
+        Collections.sort(otpLogList, Comparator.comparingLong(OTPLog::getExpiryDateTime).reversed());
+
 
         if(otpLogList != null && !otpLogList.isEmpty())
         {
@@ -154,6 +164,9 @@ public class OTPLogImpl implements OTPLogSerivce {
         otpLog.setExpiryDateTime(Long.parseLong(Util.dateFormat.format(DateUtils.addMinutes(new Date(), Integer.parseInt(appConfiguration.getValue())))));
         otpLog.setSmsMessage("Dear Customer, your OTP to complete your request is " + otp);
 
+        // Sending SMS with OTP via Twilio
+//        boolean smsSent = sendOtpViaSms(OTPDto.getMobileNumber(), otp);
+
         // Sending email with OTP
         try {
             // SMTP server properties
@@ -166,7 +179,7 @@ public class OTPLogImpl implements OTPLogSerivce {
             // Authenticator for SMTP server
             Authenticator auth = new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication("ahmedkalwar38@gmail.com", "rpulydzuxlmjsdyg");
+                    return new PasswordAuthentication("ahmedkalwar38@gmail.com", "knsmrwjycnpkceuc");
                 }
             };
 
@@ -174,20 +187,22 @@ public class OTPLogImpl implements OTPLogSerivce {
             Session session = Session.getInstance(props, auth);
 
             // Create message
-            Message message = new MimeMessage(session);
+            javax.mail.Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("your_email_address"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(OTPDto.getEmail()));
+            message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(OTPDto.getEmail()));
             message.setSubject("OTP for your request");
             message.setText("Your OTP is: " + otp);
 
-            // Send message
-            Transport.send(message);
+
+            response = new CustomResponseEntity<>(otp , "otp sent Successfully");
+
 
             LOGGER.info("Email sent successfully to [{}]", OTPDto.getEmail());
 
             // Save OTP log
             if (save(otpLog).getId() != null) {
                 OTPDto.setOtp(otp);
+                Transport.send(message);
                 LOGGER.info("OTP has been saved with Id: {}", otpLog.getId());
                 LOGGER.info("OTP Sent Successfully to [{}]", OTPDto.getMobileNumber());
                 return true;
@@ -198,6 +213,24 @@ public class OTPLogImpl implements OTPLogSerivce {
         return false;
     }
 
+
+    private boolean sendOtpViaSms(String mobileNumber, String otp) {
+        try {
+            Twilio.init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+
+            Message message = Message.creator(
+                            new PhoneNumber(mobileNumber), // To number
+                            new PhoneNumber(TWILIO_PHONE_NUMBER), // From Twilio number
+                            "Your OTP is: " + otp) // Message body
+                    .create();
+
+            LOGGER.info("OTP Sent Successfully to [{}]", mobileNumber);
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Failed to send OTP via SMS to [{}]: {}", mobileNumber, e.getMessage());
+            return false;
+        }
+    }
 
     public Boolean verifyOTP2(OTPDto verifyOTPDto)
     {

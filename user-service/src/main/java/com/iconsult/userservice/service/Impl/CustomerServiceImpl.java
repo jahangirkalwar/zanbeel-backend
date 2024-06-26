@@ -10,7 +10,6 @@ import com.iconsult.userservice.model.dto.response.AccountDto;
 import com.iconsult.userservice.model.dto.response.KafkaMessageDto;
 import com.iconsult.userservice.model.entity.AppConfiguration;
 import com.iconsult.userservice.model.entity.Customer;
-import com.iconsult.userservice.model.mapper.CustomerMapper;
 import com.iconsult.userservice.model.mapper.CustomerMapperImpl;
 import com.iconsult.userservice.repository.CustomerRepository;
 import com.iconsult.userservice.service.CustomerService;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.net.ssl.*;
@@ -54,7 +54,15 @@ public class CustomerServiceImpl implements CustomerService
     private CustomerMapperImpl customerMapperImpl;
 
     @Autowired
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
     private AppConfigurationImpl appConfigurationImpl;
+
+    @Autowired
+    public CustomerServiceImpl(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
 //    @Override
 //    public CustomResponseEntity register(CustomerDto customerDto)
@@ -183,6 +191,9 @@ public class CustomerServiceImpl implements CustomerService
             LOGGER.error("Failed to verify OTP, rejecting...");
             throw new ServiceException("Invalid OTP");
         }
+        // Encrypt the password
+        String encryptedPassword = passwordEncoder.encode(customerDto.getPassword());
+        customer.setPassword(encryptedPassword);
         // Save the customer entity after OTP verification
         customerRepository.save(customer);
 
